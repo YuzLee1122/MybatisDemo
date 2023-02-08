@@ -21,6 +21,8 @@ import redis.clients.jedis.Jedis;
  *              ②使用客户端发送命令
  *              ③如果是读，解析结果
  *              ④关闭连接
+ *
+ *      ===========================
  */
 public class JedisDemo
 {
