@@ -28,6 +28,7 @@
             resource: 从编译后的类路径下(resources)读取文件
         -->
         <mapper resource="sql.xml"/>
+        <mapper resource="EmployeeMapper.xml"/>
     </mappers>
     
 

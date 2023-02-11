@@ -63,6 +63,16 @@ import java.io.InputStream;
  *                              last_name  ---->  lastName
  *                              通过添加配置解决
  *
+ *       ---------------------
+ *          存在的问题:
+ *                  调用sqlSession提供的方法，传入的参数没有足够的类型校验，在编译时无法检查，运行时就会报错。
+ *                  调用泛型方法，不传入泛型，返回Object，需要强转。
+ *                  不符合现代项目的开发规范(分层解耦，需要有一个专门负责读写数据库的类(Dao))。
+ *
+ *                  通过接口式编程解决。
+ *                      自定义Mapper(Dao)接口。
+ *
+ *
  *
  *
  *
@@ -88,11 +98,11 @@ public class HelloWorld
                 selectOne(statement,param)
                         statement: 从已经注册的sql中根据id获取一条
          */
-        Object o = sqlSession.selectOne("feichangbang.sql1", 1);
+        Employee one = sqlSession.<Employee>selectOne("feichangbang.sql1", 1);
 
-        Employee employee = (Employee) o;
+        //Employee employee = (Employee) o;
 
-        System.out.println(employee);
+        System.out.println(one);
 
     }
 }
