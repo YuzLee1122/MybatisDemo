@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+        在Mybatis中，mapper一般指编写sql的文件
+            Mapper指Dao
+
+            namespace： 好比类的包名，随便写。
+                是什么sql就用什么标签
+-->
+<mapper namespace="feichangbang">
+
+    <!--
+        jdbc中使用?占位，在Mybatis中使用 #{xx}进行占位。
+            xx写什么?
+                如果只有一个占位符，xx随便写
+
+           ======================
+           id: 代表sql语句的唯一标识。在一个mapper中，必须唯一。目前随便写
+           resultType： 代表查询结果的一行，要封装的Java对象的类型
+
+    -->
+    <select id="sql1" resultType="com.atguigu.mybatis.bean.Employee">
+      select * from employee where id = #{xxdeio;afha;woieufhgaw ;oi}
+    </select>
+
+
+
+</mapper>

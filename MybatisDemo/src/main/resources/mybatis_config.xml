@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!-- 数据库环境 -->
+    <environments default="a">
+        <environment id="a">
+            <transactionManager type="JDBC"/>
+            <!-- 配置JDBC连接的四个参数 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://hadoop104:3306/220926?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="000000"/>
+            </dataSource>
+        </environment>
+
+    </environments>
+
+    <!-- 注册mapper -->
+    <mappers>
+        <!--
+            resource: 从编译后的类路径下(resources)读取文件
+        -->
+        <mapper resource="sql.xml"/>
+    </mappers>
+    
+
+</configuration>
