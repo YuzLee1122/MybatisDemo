@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 可以使用Property标签读取外部一个 properties文件中的属性
+            引入后的属性值可以通过 ${属性名} 获取
+     -->
+    <properties resource="config.properties"/>
+
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!-- 数据库环境 -->
+    <environments default="a">
+        <environment id="a">
+            <transactionManager type="JDBC"/>
+            <!-- 配置JDBC连接的四个参数 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver.name}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.user}"/>
+                <property name="password" value="${aaa}"/>
+            </dataSource>
+        </environment>
+
+    </environments>
+
+    <!-- 注册mapper -->
+    <mappers>
+        <!--
+            resource: 从编译后的类路径下(resources)读取文件
+            class: sql编写在一个类文件中
+        -->
+        <mapper resource="sql.xml"/>
+        <mapper resource="EmployeeMapper.xml"/>
+        <mapper class="com.atguigu.mybatis.mapper.EmployeeAnotationMapper"/>
+        <mapper class="com.atguigu.mybatis.mapper.EmployeeParamMapper"/>
+    </mappers>
+    
+
+</configuration>
