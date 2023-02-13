@@ -4,6 +4,7 @@ import com.atguigu.upp.bean.TagInfo;
 import com.atguigu.upp.bean.TaskInfo;
 import com.atguigu.upp.service.MysqlDBService;
 import com.atguigu.upp.utils.UPPUtil;
+import com.sun.deploy.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.spark.sql.SparkSession;
 
@@ -39,6 +40,8 @@ import java.io.IOException;
 public class SqlTaskExecuteApp
 {
     public static void main(String[] args) throws IOException {
+
+        System.setProperty("HADOOP_HOME","E:\\Dev\\hadoop-3.1.0");
 
         //约定平台会自动传入以下参数
        /* String taskId = args[0];
