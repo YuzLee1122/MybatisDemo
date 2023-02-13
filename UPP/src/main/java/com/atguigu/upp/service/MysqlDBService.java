@@ -1,6 +1,8 @@
 package com.atguigu.upp.service;
 
+import com.atguigu.upp.bean.TagInfo;
 import com.atguigu.upp.bean.TaskInfo;
+import com.atguigu.upp.mapper.TagInfoMapper;
 import com.atguigu.upp.mapper.TaskInfoMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -14,9 +16,18 @@ import org.apache.ibatis.session.SqlSession;
 public class MysqlDBService
 {
     private TaskInfoMapper taskInfoMapper;
+    private TagInfoMapper tagInfoMapper;
 
     public MysqlDBService(SqlSession sqlSession){
-            taskInfoMapper = sqlSession.getMapper(TaskInfoMapper.class);
+
+        taskInfoMapper = sqlSession.getMapper(TaskInfoMapper.class);
+        tagInfoMapper = sqlSession.getMapper(TagInfoMapper.class);
+    }
+
+    public TagInfo getTagInfoByTaskId(String taskId){
+        //校验参数
+        validParams(taskId);
+        return tagInfoMapper.getTagInfoByTaskId(taskId);
     }
 
     public TaskInfo getTaskInfoByTaskId(String taskId){

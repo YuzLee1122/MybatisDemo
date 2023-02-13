@@ -34,10 +34,8 @@
             resource: 从编译后的类路径下(resources)读取文件
             class: sql编写在一个类文件中
         -->
-        <mapper resource="sql.xml"/>
-        <mapper resource="EmployeeMapper.xml"/>
-        <mapper class="com.atguigu.mybatis.mapper.EmployeeAnotationMapper"/>
-        <mapper class="com.atguigu.mybatis.mapper.EmployeeParamMapper"/>
+        <mapper class="com.atguigu.upp.mapper.TaskInfoMapper"/>
+        <mapper class="com.atguigu.upp.mapper.TagInfoMapper"/>
     </mappers>
     
 

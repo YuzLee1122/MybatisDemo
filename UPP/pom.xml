@@ -20,7 +20,7 @@
             <artifactId>spark-core_2.12</artifactId>
             <version>${spark.version}</version>
             <!--
-                        &lt;!&ndash; provider如果存在，那么运行时该Jar包不存在，也不会打包到最终的发布版本中，只是编译器有效 &ndash;&gt;
+                  provide如果存在，那么运行时该Jar包不存在，也不会打包到最终的发布版本中，只是编译器有效 ;
             -->
             <scope>provided</scope>
         </dependency>
