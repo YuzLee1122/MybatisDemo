@@ -6,12 +6,13 @@ import com.atguigu.upp.bean.TaskTagRule;
 import com.atguigu.upp.service.MysqlDBService;
 import com.atguigu.upp.utils.TagValueTypeConstant;
 import com.atguigu.upp.utils.UPPUtil;
-import com.sun.deploy.Environment;
+import lombok.extern.log4j.Log4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.spark.sql.SparkSession;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Smexy on 2023/2/13
@@ -44,18 +45,19 @@ import java.util.List;
  *
  *
  */
+@Log4j
 public class SqlTaskExecuteApp
 {
     public static void main(String[] args) throws IOException {
 
-        System.setProperty("HADOOP_HOME","E:\\Dev\\hadoop-3.1.0");
+        //System.setProperty("HADOOP_USER_NAME","atguigu");
 
         //约定平台会自动传入以下参数
-       /* String taskId = args[0];
-        String doDate = args[1];*/
+        String taskId = args[0];
+        String doDate = args[1];
 
-        String taskId = "1";
-        String doDate = "2020-06-14";
+       /* String taskId = "1";
+        String doDate = "2020-06-14";*/
 
         //1.读取任务的元数据
         SqlSessionFactory sqlSessionFactory = UPPUtil.createSSF("mysql_db.xml");
@@ -66,11 +68,12 @@ public class SqlTaskExecuteApp
         List<TaskTagRule> rules = mysqlDBService.getTaskTagRulesByTaskId(taskId);
 
         String createTableSql = getCreateTableSql(tagInfo);
+       String insertSql = getInsertSql(rules, doDate, taskInfo, tagInfo);
 
         //2.获取Sparksession
         SparkSession sparkSession = UPPUtil.createSparkSession("SqlTaskExecuteApp");
-        //sparkSession.sql()
-
+        sparkSession.sql(createTableSql);
+        sparkSession.sql(insertSql);
 
     }
 
@@ -89,10 +92,37 @@ from
     ) tmp
 
      */
-    private static String getInsertSql(){
+    private static String getInsertSql(List<TaskTagRule> rules,String doDate,TaskInfo taskInfo,TagInfo tagInfo){
 
         String template = " insert overwrite table  %s.%s partition (dt='%s') " +
                           " select uid, %s from ( %s )tmp ";
+
+        //获取库的名字
+        String dbName = UPPUtil.getProperty("updbname");
+        String tableName = tagInfo.getTagCode().toLowerCase();
+
+        //处理计算的sql  替换$dt为真实的业务日期，去除结尾的;
+        String taskSql = taskInfo.getTaskSql().replace("$dt", doDate).replace(";", "");
+
+        //只有有四级标签的三级标签，才需要将tagValue再根据映射规则处理
+        String tagValueStr = "";
+        if (rules.size() > 0){
+
+            String whenThenSql = rules.stream()
+                                  .map(r -> String.format(" when '%s'  then '%s' ", r.getQueryValue(), r.getSubTagValue()))
+                                  .collect(Collectors.joining(" "));
+
+            tagValueStr = " case    tagValue " + whenThenSql + " end tagValue ";
+
+        }else{
+            tagValueStr = "tagValue";
+        }
+
+        //格式化
+        String sql = String.format(template, dbName, tableName, doDate, tagValueStr, taskSql);
+        //System.out.println(sql);
+        log.error(sql);
+        return sql;
 
     }
 

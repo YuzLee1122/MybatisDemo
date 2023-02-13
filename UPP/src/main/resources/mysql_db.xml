@@ -36,6 +36,7 @@
         -->
         <mapper class="com.atguigu.upp.mapper.TaskInfoMapper"/>
         <mapper class="com.atguigu.upp.mapper.TagInfoMapper"/>
+        <mapper class="com.atguigu.upp.mapper.TaskTagRuleMapper"/>
     </mappers>
     
 

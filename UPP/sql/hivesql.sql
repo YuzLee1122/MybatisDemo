@@ -21,7 +21,7 @@ where dt='9999-12-31';
 select
     user_id uid,sum(order_total_amount_1d) tagValue
 from gmall.dws_trade_user_order_1d
-where dt > date_sub('dt',7)
+where dt > date_sub('$dt',7)
 group by user_id;
 
 create database upp220926;
@@ -80,5 +80,18 @@ from
         id uid,`if`(isnull(gender),'U',gender) tagValue
     from gmall.dim_user_zip
     where dt='9999-12-31'
-    ) tmp
+    ) tmp;
+
+
+insert overwrite table  upp220926.tag_population_attribute_nature_gender partition (dt='2020-06-14')
+ select uid,
+        case    tagValue
+            when 'M'  then 'null'
+            when 'F'  then 'null'
+            when 'U'  then 'null'
+        end tagValue
+from ( select
+                                                                                                                                                                                                                                     id uid,`if`(isnull(gender),'U',gender) tagValue
+                                                                                                                                                                                                                                 from gmall.dim_user_zip
+                                                                                                                                                                                                                                 where dt='9999-12-31' )tmp
 
