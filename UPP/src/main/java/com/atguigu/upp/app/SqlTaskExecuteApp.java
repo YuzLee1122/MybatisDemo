@@ -2,13 +2,16 @@ package com.atguigu.upp.app;
 
 import com.atguigu.upp.bean.TagInfo;
 import com.atguigu.upp.bean.TaskInfo;
+import com.atguigu.upp.bean.TaskTagRule;
 import com.atguigu.upp.service.MysqlDBService;
+import com.atguigu.upp.utils.TagValueTypeConstant;
 import com.atguigu.upp.utils.UPPUtil;
 import com.sun.deploy.Environment;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.spark.sql.SparkSession;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Smexy on 2023/2/13
@@ -28,6 +31,10 @@ import java.io.IOException;
  *                  如何计算?
  *                       a)得知计算的任务是为了针对哪个标签计算
  *                              对tag_info表的 tag_task_id字段进行查询，获取当前任务计算的标签信息
+ *
+ *                  需要将标签计算的结果进行保存。
+ *                          选择hive保存计算的结果。
+ *                              建表
  *
  *
  *  --------------------------------------------
@@ -56,8 +63,9 @@ public class SqlTaskExecuteApp
 
         TaskInfo taskInfo = mysqlDBService.getTaskInfoByTaskId(taskId);
         TagInfo tagInfo = mysqlDBService.getTagInfoByTaskId(taskId);
-        System.out.println(taskInfo);
-        System.out.println(tagInfo);
+        List<TaskTagRule> rules = mysqlDBService.getTaskTagRulesByTaskId(taskId);
+
+        String createTableSql = getCreateTableSql(tagInfo);
 
         //2.获取Sparksession
         SparkSession sparkSession = UPPUtil.createSparkSession("SqlTaskExecuteApp");
@@ -65,4 +73,71 @@ public class SqlTaskExecuteApp
 
 
     }
+
+    /*
+insert overwrite table ?.? partition (dt='?')
+select
+    uid,
+    ? case    tagValue
+        when 'M'  then '男性'
+        when 'F'  then '女性'
+        when 'U'  then '未知'
+    end tagValue
+from
+(
+   ?
+    ) tmp
+
+     */
+    private static String getInsertSql(){
+
+        String template = " insert overwrite table  %s.%s partition (dt='%s') " +
+                          " select uid, %s from ( %s )tmp ";
+
+    }
+
+
+    /*
+        在hive中建表保存当前任务计算的结果
+模版:
+create table ?.?(
+     uid string,
+     tagValue ?
+ )comment '?'
+partitioned by (dt string)
+location 'xxx/?'
+
+    ?: jdbc中的占位符
+    %s: java程序中字符串中的 填入 字符串类型的占位符
+    %d:  java程序中字符串中的 填入 数值类型的占位符
+
+     */
+    private static String getCreateTableSql(TagInfo tagInfo){
+
+        String template = " create table if not exists %s.%s ( uid string, tagValue %s )comment '%s' partitioned by (dt string)" +
+                         "  location '%s/%s'  ";
+
+        //获取库的名字
+        String dbName = UPPUtil.getProperty("updbname");
+        String tableName = tagInfo.getTagCode().toLowerCase();
+
+        //判断标签计算的值的类型
+        String tagValueType = "";
+        switch (tagInfo.getTagValueType()){
+            case TagValueTypeConstant.TAG_VALUE_TYPE_LONG : tagValueType = "bigint"; break;
+            case TagValueTypeConstant.TAG_VALUE_TYPE_DECIMAL : tagValueType = "decimal(16,2)"; break;
+            case TagValueTypeConstant.TAG_VALUE_TYPE_STRING : tagValueType = "string"; break;
+            case TagValueTypeConstant.TAG_VALUE_TYPE_DATE: tagValueType = "string"; break;
+        }
+
+        //获取存储的路径前缀
+        String hdfsPath = UPPUtil.getProperty("hdfsPath");
+
+        //填充占位符
+        String sql = String.format(template, dbName, tableName, tagValueType, tagInfo.getTagName(), hdfsPath, tableName);
+        System.out.println(sql);
+        return sql;
+
+    }
+
 }

@@ -23,3 +23,62 @@ select
 from gmall.dws_trade_user_order_1d
 where dt > date_sub('dt',7)
 group by user_id;
+
+create database upp220926;
+
+/*
+    1.是否是外部表
+        无关紧要。 当前hive中保存的标签信息，只是一个临时结果。
+
+
+    2.是否是分区表？如果是以什么分区?
+
+        是，以业务日期分区。 画像从数仓中读取数据计算，数仓中的数据以天为单位更新，计算的画像信息也要每天一更新。
+
+    3.列的设置
+            uid string
+            tagValue  (文本|日期|浮点|整数)  最终要看计算的标签才能确定
+
+    4.表中文件的类型，是否要压缩?
+            很灵活。需要就加上。
+
+    5.命名
+            以计算的标签名(tag_code)作为表名
+
+
+ */
+
+ create table upp220926.TAG_POPULATION_ATTRIBUTE_NATURE_GENDER(
+     uid string,
+     tagValue string
+ )comment '性别'
+partitioned by (dt string)
+location 'xxx/TAG_POPULATION_ATTRIBUTE_NATURE_GENDER';
+
+create table if not exists upp220926.tag_population_attribute_nature_gender ( uid string, tagValue string )
+comment '性别' partitioned by (dt string)
+    location 'hdfs://hadoop102:9820/user_profile/tag_population_attribute_nature_gender'
+
+
+/*
+    如果当前任务计算的是没有四级标签的三级标签，可以直接把sql取出，拼接在insert后面。
+
+    如果当前任务计算的是有四级标签的三级标签，例如性别，那么还需要根据sql计算的值，去映射四级标签值。
+
+ */
+insert overwrite table upp220926.tag_population_attribute_nature_gender partition (dt='2020-06-14')
+select
+    uid,
+    case    tagValue
+        when 'M'  then '男性'
+        when 'F'  then '女性'
+        when 'U'  then '未知'
+    end tagValue
+from
+(
+    select
+        id uid,`if`(isnull(gender),'U',gender) tagValue
+    from gmall.dim_user_zip
+    where dt='9999-12-31'
+    ) tmp
+
