@@ -34,9 +34,7 @@
             resource: 从编译后的类路径下(resources)读取文件
             class: sql编写在一个类文件中
         -->
-        <mapper class="com.atguigu.upp.mapper.TaskInfoMapper"/>
-        <mapper class="com.atguigu.upp.mapper.TagInfoMapper"/>
-        <mapper class="com.atguigu.upp.mapper.TaskTagRuleMapper"/>
+        <mapper class="com.atguigu.upp.mapper.ClickhouseMapper"/>
     </mappers>
     
 

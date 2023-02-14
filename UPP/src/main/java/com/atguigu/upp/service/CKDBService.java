@@ -23,4 +23,10 @@ public class CKDBService
         clickhouseMapper.createWideTable(tableName,column);
 
     }
+
+    public  void dropWideTable(String table){
+        MysqlDBService.validParams(table);
+        clickhouseMapper.dropWideTable(table);
+
+    }
 }

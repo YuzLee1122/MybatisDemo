@@ -5,10 +5,16 @@ import com.atguigu.upp.bean.TaskInfo;
 import com.atguigu.upp.service.CKDBService;
 import com.atguigu.upp.service.MysqlDBService;
 import com.atguigu.upp.utils.UPPUtil;
+import jodd.util.PropertiesUtil;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
+import org.apache.spark.sql.SparkSession;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -82,10 +88,40 @@ public class MergeWideTableApp
         CKDBService ckDBService = new CKDBService(ckSqlSessionFactory.openSession());
 
         List<TagInfo> tags = mysqlDBService.getTaskInfoTodayNeedToExecute();
+        SparkSession sparkSession = UPPUtil.createSparkSession("MergeWideTableApp");
 
         //②使用pivot拼接查询语句，查询合并的宽表
-        pivotSql(tags,doDate);
+        String pivotSql = pivotSql(tags, doDate);
 
+        //③写入ck
+        writeWideTableToCk(pivotSql,ckDBService,doDate,tags,sparkSession);
+
+
+
+    }
+
+    private static void writeWideTableToCk(String pivotSql,CKDBService ckDBService,String doDate,List<TagInfo> tags,SparkSession sparkSession){
+
+        //一天一张宽表，名字需要体现日期  固定前缀_日期
+        String tableName = UPPUtil.getProperty("upwideprefix") + doDate.replace("-", "_");
+        //为了保障幂等性，先删表
+        ckDBService.dropWideTable(tableName);
+        //再建表
+        String columnSql = tags.stream().map(t -> t.getTagCode().toLowerCase() + " String").collect(Collectors.joining(","));
+        ckDBService.createWideTable(tableName,columnSql);
+        //查询宽表
+        Dataset<Row> data = sparkSession.sql(pivotSql);
+        //写出到Clickhouse
+        Properties properties = new Properties();
+
+        data.write()
+            //自己建表，向其中写入数据，必须选Append。不选，默认是ErrorIfExists(Spark自动建表，报错已经存在)
+            .mode(SaveMode.Append)
+            .option("driver", UPPUtil.getProperty("ck.jdbc.driver.name"))
+            .option("batchsize",500)
+            .option("isolationLevel","NONE")   //事务关闭
+            .option("numPartitions", "4") // 设置并发
+            .jdbc(UPPUtil.getProperty("ck.jdbc.url"),tableName,properties);
 
     }
 
