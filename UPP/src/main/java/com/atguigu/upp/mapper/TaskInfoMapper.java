@@ -1,8 +1,11 @@
 package com.atguigu.upp.mapper;
 
 import com.atguigu.upp.bean.TaskInfo;
+import lombok.extern.log4j.Log4j;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * Created by Smexy on 2023/2/13
@@ -19,4 +22,6 @@ public interface TaskInfoMapper
     //根据taskId查询任务的基本信息
     @Select("select * from task_info where id= #{id}")
     TaskInfo getTaskInfoByTaskId(@Param("id") String taskId);
+
+
 }

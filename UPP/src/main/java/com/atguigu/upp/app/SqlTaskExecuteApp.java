@@ -53,11 +53,11 @@ public class SqlTaskExecuteApp
         //System.setProperty("HADOOP_USER_NAME","atguigu");
 
         //约定平台会自动传入以下参数
-        String taskId = args[0];
-        String doDate = args[1];
+        /*String taskId = args[0];
+        String doDate = args[1];*/
 
-       /* String taskId = "1";
-        String doDate = "2020-06-14";*/
+       String taskId = "3";
+        String doDate = "2020-06-14";
 
         //1.读取任务的元数据
         SqlSessionFactory sqlSessionFactory = UPPUtil.createSSF("mysql_db.xml");

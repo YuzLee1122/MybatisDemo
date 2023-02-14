@@ -51,7 +51,11 @@ public class MysqlDBService
 
     }
 
-    public void validParams(String... args){
+    public List<TagInfo> getTaskInfoTodayNeedToExecute(){
+        return tagInfoMapper.getTaskInfoTodayNeedToExecute();
+    }
+
+    public static void validParams(String... args){
 
         for (String arg : args) {
             //isBlank(str): 判断str是否是 白字符(空格，回车，tag) 或 null

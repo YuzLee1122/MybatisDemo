@@ -85,3 +85,35 @@ pivot(
     max(tag_value)
    for tag_code in ('gender','age','amount')
 );
+
+
+select
+    *
+from (
+        select uid,`tagValue`,'tag_consumer_behavior_order_amount7d' tagCode from upp220926.tag_consumer_behavior_order_amount7d where dt='2020-06-14'
+        union all
+        select uid,tagvalue ,'tag_population_attribute_nature_gender' tagCode from upp220926.tag_population_attribute_nature_gender where dt='2020-06-14'
+        union all
+        select uid,`tagValue`,'tag_population_attribute_nature_period' tagCode from upp220926.tag_population_attribute_nature_period where dt='2020-06-14'
+         ) t
+pivot(
+    max(tagValue)
+   for tagCode in ('tag_consumer_behavior_order_amount7d',
+                  'tag_population_attribute_nature_gender',
+                   'tag_population_attribute_nature_period')
+);
+
+select
+       *
+from (  select uid,`tagValue`,'tag_population_attribute_nature_gender' tagCode from upp220926.tag_population_attribute_nature_gender where dt='2020-06-14'
+        union all
+       select uid,`tagValue`,'tag_population_attribute_nature_period' tagCode from upp220926.tag_population_attribute_nature_period where dt='2020-06-14'
+       union all
+      select uid,`tagValue`,'tag_consumer_behavior_order_amount7d' tagCode from upp220926.tag_consumer_behavior_order_amount7d where dt='2020-06-14'  )t
+pivot(
+ max(tagValue)
+ for tagCode in ('TAG_POPULATION_ATTRIBUTE_NATURE_GENDER','TAG_POPULATION_ATTRIBUTE_NATURE_PERIOD','TAG_CONSUMER_BEHAVIOR_ORDER_AMOUNT7D') )
+
+
+select * from (  select uid,`tagValue`,'tag_population_attribute_nature_gender' tagCode from upp220926.tag_population_attribute_nature_gender where dt='2020-06-14'  union all  select uid,`tagValue`,'tag_population_attribute_nature_period' tagCode from upp220926.tag_population_attribute_nature_period where dt='2020-06-14'  union all  select uid,`tagValue`,'tag_consumer_behavior_order_amount7d' tagCode from upp220926.tag_consumer_behavior_order_amount7d where dt='2020-06-14'  )t pivot(  max(tagValue)  for tagCode in ('tag_population_attribute_nature_gender','tag_population_attribute_nature_period','tag_consumer_behavior_order_amount7d') )
+
