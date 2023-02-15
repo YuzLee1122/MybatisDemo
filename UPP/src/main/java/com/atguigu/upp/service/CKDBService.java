@@ -29,4 +29,15 @@ public class CKDBService
         clickhouseMapper.dropWideTable(table);
 
     }
+
+    public void insertBitmapTable( String sourceTable,String tag,
+                                 String target,String dt){
+        MysqlDBService.validParams(sourceTable,tag,target,dt);
+        clickhouseMapper.insertBitmapTable(sourceTable,tag,target,dt);
+    }
+
+    public void dropBitmapByDate(String dt,String table){
+        MysqlDBService.validParams(dt,table);
+        clickhouseMapper.dropBitmapByDate(dt,table);
+    }
 }

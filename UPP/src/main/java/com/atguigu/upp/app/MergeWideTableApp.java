@@ -75,11 +75,11 @@ public class MergeWideTableApp
     public static void main(String[] args) throws IOException {
 
         //约定平台会自动传入以下参数
-        /*String taskId = args[0];
-        String doDate = args[1];*/
-
+        String taskId = args[0];
+        String doDate = args[1];
+/*
         String taskId = "1";
-        String doDate = "2020-06-14";
+        String doDate = "2020-06-14";*/
 
         //①查询今天要计算的任务的标签信息
         SqlSessionFactory sqlSessionFactory = UPPUtil.createSSF("mysql_db.xml");
