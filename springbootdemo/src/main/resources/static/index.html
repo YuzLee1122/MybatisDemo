@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+        welcome to index page!
+
+        <!-- 加粗大标题 -->
+        <h1>hello</h1>
+        <!-- 超链接标签
+            超链接和浏览器地址栏，只能发送get请求
+         -->
+        <a href="http://www.atguigu.com">点击我，跳转到尚硅谷官网</a>
+        <!--  换行 -->
+        <br/>
+        <!-- 表单(表格，单子)
+                action: 单子填完后，提交到哪里
+                method: 单子填完后，提交的方式。
+                            默认是get
+
+                          get:  提交时，所有填写的 属性名和属性值都会附加在url的后面
+                                    格式:  url?name=value&name1=value1&....
+
+                          post: 提交时，所有填写的 属性名和属性值都会附加在请求体中
+                                    格式:  url
+                                       请求体：  name=value&name1=value1
+         -->
+        <form action="hahaha" method="get">
+            <!--
+                    input是输入框
+                        name: 填入的变量名
+                        value: 填入的变量值
+                        type: 输入框的类型。默认就是text(文本输入框)
+                                submit: 提交按钮
+                                radio: 单选按钮
+            -->
+            姓名: <input name="name" value=""   > <br/>
+            性别: <input name="sex" value="M" type="radio">男
+                  <input name="sex" value="F" type="radio">女 <br/>
+            年龄: <input name="age" value="18"> <br/>
+            <input value="提交按钮" type="submit">
+
+        </form>
+
+</body>
+</html>
