@@ -83,14 +83,45 @@ from
     ) tmp;
 
 
-insert overwrite table  upp220926.tag_population_attribute_nature_gender partition (dt='2020-06-14')
- select uid,
-        case    tagValue
-            when 'M'  then 'null'
-            when 'F'  then 'null'
-            when 'U'  then 'null'
-        end tagValue
-from ( select
+----------------------------
+
+select * from user_tag_merge order by uid;
+
+/*
+        输入:              1,M
+                          2,M
+                          3,M
+
+        处理过程：  1.拼接当前列列名
+                  2.  1,gender:M,favor:sm,ageGroup:90后
+                            调用 UDTF，才能把1行 uid=1，变成3行
+                        出:  gender,M, [1,xxx]
+                             favor,sm, [1,xxx]
+                            ageGroup,90后,[1,xxx]
+                  3.最终的计算思路一定是聚合
+
+        清楚输出的格式:    gender,M ,[1,2,3]
+ */
+select
+    tagCode,tagValue,collect_list(uid) us
+from user_tag_merge
+lateral view explode(str_to_map(concat('gender:',gender,',agegroup:',agegroup,',favor:',favor))) tmp as tagCode,tagValue
+group by tagCode,tagValue;
+
+-- explode(a) - separates the elements of array a into multiple rows,
+-- or the elements of a map into multiple rows and columns
+-- 炸裂的是数组，将数组炸为 N行1列。
+-- 炸裂的是Map<K,V>，将Map炸为 N行2列。
+desc  function extended explode;
+
+/*
+    str_to_map(text, delimiter1, delimiter2) - Creates a map by parsing text
+Split text into key-value pairs using two delimiters.
+    The first delimiter separates pairs, and the second delimiter sperates key and value.
+    If only one parameter is given, default delimiters are used: ',' as delimiter1 and ':' as delimiter2.
+
+ */
+desc  function extended str_to_map;
                                                                                                                                                                                                                                      id uid,`if`(isnull(gender),'U',gender) tagValue
                                                                                                                                                                                                                                  from gmall.dim_user_zip
                                                                                                                                                                                                                                  where dt='9999-12-31' )tmp
