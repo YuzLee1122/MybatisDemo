@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+            namespace： 必须和接口的全类名一致
+                是什么sql就用什么标签
+-->
+<mapper namespace="com.atguigu.springbootdemo.mapper.EmployeeMapper">
+
+    <!--
+        jdbc中使用?占位，在Mybatis中使用 #{xx}进行占位。
+            xx写什么?
+                如果只有一个占位符，xx随便写
+
+           ======================
+           id: 代表sql语句的唯一标识。在一个mapper中，必须唯一。必须和调用此sql的方法名一致。
+
+           resultType： 代表查询结果的一行，要封装的Java对象的类型
+
+    -->
+    <select id="getEmployeeById" resultType="com.atguigu.springbootdemo.bean.Employee">
+      select * from employee where id = #{xxdeio;afha;woieufhgaw ;oi}
+    </select>
+
+
+    <select id="getAll" resultType="com.atguigu.springbootdemo.bean.Employee">
+      select * from employee
+    </select>
+
+    <!--
+            没有返回值的方法，resultType可以省略。
+    -->
+    <delete id="deleteEmployeeById">
+         delete  from employee where id = #{xx}
+    </delete>
+
+    <!--
+            多个占位符的话，如果参数是从方法的一个Map或Bean中获取key或者属性的值作为参数。
+                    updateEmployee(Employee employee)
+                            employee(id=1,lastName=jack,email=a,gender=b)
+                    updateEmployee(Map employee)
+                            { id=1,lastName=jack,email=a,gender=b  }
+
+                      xxx通通写 Bean的属性名或Map中的key
+    -->
+    <insert id="insertEmployee">
+        insert into employee(last_name,gender,email) values(#{lastName},#{gender},#{email})
+    </insert>
+
+    <update id="updateEmployee">
+        update employee set last_name=#{lastName} , gender = #{gender } , email=#{email}
+        where id = #{id}
+    </update>
+
+
+
+</mapper>
